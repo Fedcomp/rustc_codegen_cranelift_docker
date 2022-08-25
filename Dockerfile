@@ -11,8 +11,7 @@ RUN ./y.rs build
 # RUN ./test.sh # benchmark is panicking in specified hash
 
 WORKDIR /opt/rustc_codegen_cranelift/build
-RUN ln -s cargo-clif cargo
-RUN ln -s rustc-clif rustc
+RUN ln -s cargo-clif fcargo
 ENV PATH="/opt/rustc_codegen_cranelift/build:${PATH}"
 
 WORKDIR /
