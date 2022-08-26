@@ -1,5 +1,12 @@
 FROM rust:1.63.0-buster
 
+# Remove stable toolchain and set nightly version
+# used by specific commit of rustc_codegen_cranelist below
+# allows installation of rust-analyzer-preview component
+# to make vscode rust-analyzer extension to work
+RUN rustup toolchain uninstall 1.63.0
+RUN rustup default nightly-2022-08-24
+
 WORKDIR /opt
 RUN git config --global user.email "noreply@example.com"
 RUN git clone https://github.com/bjorn3/rustc_codegen_cranelift.git
