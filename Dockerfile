@@ -1,11 +1,16 @@
-FROM rust:1.63.0-buster
+FROM debian:bookworm
 
-# Remove stable toolchain and set nightly version
-# used by specific commit of rustc_codegen_cranelist below
-# allows installation of rust-analyzer-preview component
-# to make vscode rust-analyzer extension to work
-RUN rustup toolchain uninstall 1.63.0
-RUN rustup default nightly-2022-08-24
+RUN apt-get update
+RUN apt-get install -y curl ca-certificates
+RUN apt-get install -y build-essential
+RUN apt-get install -y git
+
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+
+RUN curl https://sh.rustup.rs -sSf | \
+    sh -s -- --default-toolchain nightly-2022-08-24 -y
 
 RUN git config --global user.email "noreply@example.com"
 RUN git clone https://github.com/bjorn3/rustc_codegen_cranelift.git /opt/rustc_codegen_cranelift
@@ -16,8 +21,6 @@ RUN ./y.rs prepare
 RUN ./y.rs build
 # RUN ./test.sh # benchmark is panicking in specified hash
 
-WORKDIR /opt/rustc_codegen_cranelift/build
-RUN ln -s cargo-clif fcargo
-ENV PATH="/opt/rustc_codegen_cranelift/build:${PATH}"
+RUN (cd build && ln -s cargo-clif fcargo)
 
-WORKDIR /
+ENV PATH="/opt/rustc_codegen_cranelift/build:${PATH}"
